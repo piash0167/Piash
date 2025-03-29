@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আজকের ডাক্তারদের তালিকা</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background: url('cover.jpg') no-repeat center center/cover;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+            margin: 20px 0;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header"></div>
+    <div class="title">বিজ্ঞাপন মেলা</div>
+    <table>
+        <thead>
+            <tr>
+                <th>ডাক্তারের নাম</th>
+                <th>বার</th>
+                <th>সময়</th>
+                <th>হাসপাতালের নাম</th>
+                <th>রোগের নাম</th> <!-- নতুন কলাম -->
+            </tr>
+        </thead>
+        <tbody id="doctor-list"></tbody>
+    </table>
+    <script>
+        const doctors = [
+            // সেন্ট্রাল হাসপাতাল
+            { name: "ডাঃ বিলকিস আক্তার", day: ["শনিবার", "মঙ্গলবার", "বুধবার"], time: "সকাল ১০টা - বিকাল ৪টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "সাধারণ শারীরিক পরীক্ষা" },
+            { name: "ডাঃ মোঃ সাজ্জাদ সামাদ", day: ["রবিবার"], time: "বিকাল ৩টা - সন্ধ্যা ৬টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "চর্মরোগ" },
+            { name: "ডাঃ চেমন আরা বেগম", day: ["বৃহস্পতিবার"], time: "দুপুর ২.৩০টা - বিকাল ৫টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "গাইনী সমস্যা" },
+            { name: "ডাঃ মেহেদী হাসান শিমুল", day: ["শনিবার", "রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার"], time: "বিকাল ৩টা - সন্ধ্যা ৬টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "সাধারণ শারীরিক পরীক্ষা" },
+            { name: "ডাঃ মোঃ আলী আশরাফ", day: ["মঙ্গলবার", "বুধবার", "বৃহস্পতিবার"], time: "সকাল ১০টা - দুপুর ১টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "কিডনি রোগ" },
+            { name: "ডাঃ মোঃ আলাউদ্দিন", day: ["সোমবার"], time: "সকাল ১০টা - দুপুর ১টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "সাধারণ শারীরিক পরীক্ষা" },
+            { name: "ডাঃ মোঃ হাবিব ইসমাইল ভূঁইয়া", day: ["শুক্রবার"], time: "সকাল ১০টা - বিকাল ৪টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "মূত্রনালী সংক্রান্ত সমস্যা" },
+            { name: "ডাঃ উত্তম কুমার দাশ গুপ্ত", day: ["শনিবার", "রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার"], time: "দুপুর ৩টা - ৬টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "পেটের রোগ" },
+            { name: "ডাঃ তাহমিনা খানম", day: ["শুক্রবার", "রবিবার", "সোমবার"], time: "সকাল ১০টা - বিকাল ৫টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "গাইনী সমস্যা" },
+            { name: "ডাঃ মোঃ জাওয়াদুল ইসলাম (জনি)", day: ["শুক্রবার"], time: "সকাল ১০টা - বিকাল ৪টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "চর্মরোগ" },
+            { name: "ডাঃ মোঃ মহিবুর রহমান", day: ["মঙ্গলবার"], time: "দুপুর ২টা - সন্ধ্যা ৬টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "সাধারণ শারীরিক পরীক্ষা" },
+            { name: "ডাঃ সৈয়দ মোঃ সারওয়ার", day: ["শুক্রবার"], time: "সকাল ১০টা - বিকাল ৫টা", hospital: "সেন্ট্রাল হাসপাতাল", disease: "মৃগী রোগ" },
+
+            // প্রবাসী কল্যাণ হাসপাতাল
+            { name: "ডাঃ মোঃ মতিয়ার রহমান", day: ["প্রতিদিন"], time: "সকাল ০৯ঃ০০ টা - সন্ধ্যা ০৬ঃ০০ টা", hospital: "প্রবাসী কল্যাণ হাসপাতাল", disease: "সাধারণ শারীরিক পরীক্ষা" },
+            { name: "ডাঃ ইফতেখার আহমেদ", day: ["মঙ্গলবার", "শুক্রবার"], time: "মঙ্গলবার দুপুর ৩টা - সন্ধ্যা ৬টা, শুক্রবার সকাল ৯টা - বিকাল ৪টা", hospital: "প্রবাসী কল্যাণ হাসপাতাল", disease: "অলস রোগ" },
+            { name: "ডাঃ উমার মাহাদী আবির", day: ["রবিবার", "মঙ্গলবার"], time: "রবিবার ও মঙ্গলবার দুপুর ৩টা - সন্ধ্যা ৬টা", hospital: "প্রবাসী কল্যাণ হাসপাতাল", disease: "এলার্জি" },
+            { name: "ডাঃ সব্যসাচী তালুকদার", day: ["শুক্রবার"], time: "সকাল ৯টা - দুপুর ২টা", hospital: "প্রবাসী কল্যাণ হাসপাতাল", disease: "হাড়ের সমস্যার জন্য" },
+
+            // ইসলামীয়া কেয়ার হাসপাতাল
+            { name: "ডাঃ অমিত কুমার ঠাকুর", day: ["মঙ্গলবার"], time: "বিকাল ৩টা - সন্ধ্যা ৭টা", hospital: "ইসলামীয়া কেয়ার হাসপাতাল", disease: "নাক, কান ও গলা রোগ" },
+            { name: "ডাঃ তানজিন হোসেন", day: ["মঙ্গলবার", "শুক্রবার"], time: "সকাল ৯টা - ৫টা", hospital: "ইসলামীয়া কেয়ার হাসপাতাল", disease: "গাইনী ও স্ত্রীরোগ" },
+            { name: "ডাঃ মোঃ আসাদুজ্জামান", day: ["রবিবার"], time: "সকাল ১০টা - বিকাল ৪টা", hospital: "ইসলামীয়া কেয়ার হাসপাতাল", disease: "সার্জারি" },
+            { name: "ডাঃ মীর তারিকুর রহমান", day: ["শুক্রবার"], time: "সকাল ১০টা - বিকাল ৫টা", hospital: "ইসলামীয়া কেয়ার হাসপাতাল", disease: "কোলোরেক্টাল সার্জারি" },
+            { name: "ডাঃ সামসাদ বেগম", day: ["শনিবার", "বুধবার"], time: "সকাল ১১টা - বিকাল ৩টা", hospital: "ইসলামীয়া কেয়ার হাসপাতাল", disease: "চর্মরোগ, যৌন রোগ" }
+        ];
+
+        function getTodayDoctors() {
+            const days = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+            const today = new Date().getDay();
+            const todayName = days[today];
+
+            return doctors.filter(doc => doc.day.includes(todayName));
+        }
+
+        function loadDoctors() {
+            const doctorList = document.getElementById("doctor-list");
+            doctorList.innerHTML = "";
+            const todayDoctors = getTodayDoctors();
+
+            todayDoctors.forEach(doc => {
+                const row = `<tr>
+                    <td>${doc.name}</td>
+                    <td>${doc.day.join(", ")}</td>
+                    <td>${doc.time}</td>
+                    <td>${doc.hospital}</td>
+                    <td>${doc.disease}</td> <!-- নতুন কলাম -->
+                </tr>`;
+                doctorList.innerHTML += row;
+            });
+        }
+
+        loadDoctors();
+    </script>
+</body>
+</html>
